@@ -13,7 +13,7 @@ class Farmer(Base):
     phone_number = Column(String, nullable=False)
 
     # Relationship to Product
-    products = relationship("Product", back_populates="farmer")
+    products = relationship("Product", back_populates="farmer", cascade="all, delete, delete-orphan")
 
     def __repr__(self):
         return f"<Farmer {self.name} ({self.location})>"

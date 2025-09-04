@@ -34,7 +34,7 @@ def view_farmers():
     for f in farmers:
         print(f"{f.id}. {f.name} ({f.location}) - phone: {f.phone_number}")
 
-# Deletes farmer by ID
+# Deletes farmer along with all their products by ID
 def delete_farmer():
     view_farmers()
     farmer_id = int(input("Enter the ID of the farmer to delete: "))
@@ -127,7 +127,7 @@ def delete_product():
 
     try:
         session.commit()
-        print(f"✅ Product {product.name} deleted successfully!")
+        print(f"Product {product.name} deleted successfully!")
     except Exception as e:
         session.rollback()
         print(f"Error: {e}")
