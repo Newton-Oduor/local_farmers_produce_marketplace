@@ -3,7 +3,7 @@ from models.farmer import Farmer
 from models.product import Product
 
 # A database session to interact with SQLite
-session = session()
+session = Session()
 
 # ------------------------
 # Farmer related functions
@@ -33,6 +33,23 @@ def view_farmers():
         return
     for f in farmers:
         print(f"{f.id}. {f.name} ({f.location}) - phone: {f.phone_number}")
+
+# Deletes farmer by ID
+def delete_farmer():
+    view_farmers()
+    farmer_id = int(input("Enter the ID of the farmer to delete: "))
+    farmer = session.query(Farmer).get(farmer_id)
+    if not farmer:
+        print("Farmer not found!")
+        return
+    session.delete(farmer)
+
+    try:
+        session.commit()
+        print(f"farmer {farmer.name} deleted successfully")
+    except Exception as e:
+        session.rollback()
+        print(f"Error: {e}")
 
 # -------------------------
 # Product related functions
@@ -70,7 +87,7 @@ def add_product():
         print(f"Error: {e}")
 
 # Displays all products
-def view products():
+def view_products():
     products = session.query(Product).all()
     if not products:
         print("No products found.")
@@ -97,6 +114,23 @@ def view_products_by_farmer():
     print(f"Products by {farmer.name}:")
     for p in farmer.products:
         print(f"- {p.name} (Price: {p.price}, qty: {p.quantity})")
+
+# Delete a product by ID
+def delete_product():
+    view_products()
+    product_id = int(input("Enter the ID of the product to delete: "))
+    product = session.query(Product).get(product_id)
+    if not product:
+        print("Product not found!")
+        return
+    session.delete(product)
+
+    try:
+        session.commit()
+        print(f"✅ Product {product.name} deleted successfully!")
+    except Exception as e:
+        session.rollback()
+        print(f"Error: {e}")
 
 # ------------------------
 # payment placeholder

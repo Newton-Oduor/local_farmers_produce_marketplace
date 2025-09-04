@@ -10,6 +10,8 @@ def display_menu():
     print("4. View all Products")
     print("5. View Products by Farmer")
     print("6. Purchase a Product (M-Pesa Payment)")
+    print("7. Delete a farmer")
+    print("8. Delete a product")
     print("0. Exit")
 
 

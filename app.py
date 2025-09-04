@@ -1,5 +1,5 @@
 from cli.menu import display_menu
-from cli.actions import (add_farmer, add_product, view_farmers, view_products, view_products_by_farmer, process_payment)
+from cli.actions import (add_farmer, add_product, view_farmers, view_products, view_products_by_farmer, delete_farmer, delete_product, process_payment)
 
 # Main CLI loop. Displays menu and calls functions based on user choice
 def main():
@@ -18,6 +18,10 @@ def main():
             view_products_by_farmer()
         elif choice == "6":
             process_payment()
+        elif choice == "7":
+            delete_farmer()
+        elif choice == "8":
+            delete_product()
         elif choice == "0":
             print("Exiting the App. Goodbye!")
             break
