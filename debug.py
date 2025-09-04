@@ -1,52 +1,45 @@
-from database.connection import session
-from sqlalchemy import text
+from database.connection import Session, engine, Base
 
-def test_connection():
-    try:
-        # Just run a raw SQL query to test if DB is alive
-        result = session.execute(text("SELECT 1")).fetchone()
-        print("✅ Database connected successfully:", result)
-    except Exception as e:
-        print("❌ Database connection failed:", e)
-
-if __name__ == "__main__":
-    test_connection()
-
-from database.connection import engine, Base
+# 1️⃣ Import all models BEFORE creating tables
 from models.farmer import Farmer
+from models.product import Product
 
-def create_tables():
+# 2️⃣ Create all tables
+try:
     Base.metadata.create_all(engine)
-    print("✅ Tables created succesfully")
+    print("✅ Tables created successfully")
+except Exception as e:
+    print(f"❌ Error creating tables: {e}")
 
-if __name__ == "__main__":
-    create_tables()
-
-from database.connection import Session
-from models.farmer import Farmer
-
-# Create a session (like opening a notebook for DB work)
+# 3️⃣ Open a session
 session = Session()
 
 try:
-    # Create a new farmer object
-    new_farmer = Farmer(
-        name="Mary",
-        location="Nairobi",
-        phone_number="0712345678"
-    )
-
-    # Add farmer to the session
-    session.add(new_farmer)
-
-    # Commit (save) to the database
+    # 4️⃣ Add a Farmer
+    farmer = Farmer(name="George O", location="Kisumu", phone_number="0799999999")
+    session.add(farmer)
     session.commit()
+    print(f"✅ Added farmer: {farmer}")
 
-    print(f"✅ Farmer added with ID: {new_farmer.id}")
+    # 5️⃣ Add a Product linked to the Farmer
+    product = Product(name="Tomatoes", price=50.0, quantity=100, farmer=farmer)
+    session.add(product)
+    session.commit()
+    print(f"✅ Added product: {product}")
+
+    # 6️⃣ Query: get the product and its farmer
+    fetched_product = session.query(Product).first()
+    print(f"\n🔎 Product '{fetched_product.name}' belongs to Farmer: {fetched_product.farmer.name}")
+
+    # 7️⃣ Query: get the farmer and all their products
+    fetched_farmer = session.query(Farmer).first()
+    print(f"\n📋 Farmer {fetched_farmer.name}'s products:")
+    for p in fetched_farmer.products:
+        print(f"- {p.name} (Price: {p.price}, Qty: {p.quantity})")
 
 except Exception as e:
-    session.rollback()  # undo if something fails
-    print(f"❌ Error adding farmer: {e}")
+    session.rollback()
+    print(f"❌ Error adding data: {e}")
 
 finally:
     session.close()

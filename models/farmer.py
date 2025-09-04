@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
 from database.connection import Base
 
 # Farmer model to represent farmer in the system
@@ -6,10 +7,13 @@ class Farmer(Base):
     __tablename__ = "farmers" # Table name in the db
 
     # Columns = fields in the farmers table
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
-    location = Column(String)
-    phone_number = Column(String, unique=True)
+    location = Column(String, nullable=False)
+    phone_number = Column(String, nullable=False)
+
+    # Relationship to Product
+    products = relationship("Product", back_populates="farmer")
 
     def __repr__(self):
-        return f"<Farmer id={self.id} name={self.name} location={self.location}>"
+        return f"<Farmer {self.name} ({self.location})>"
