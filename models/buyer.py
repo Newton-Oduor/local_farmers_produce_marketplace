@@ -11,6 +11,7 @@ class Buyer(Base):
     name = Column(String, nullable=False)
     phone_number = Column(String, nullable=False, unique=True)
 
+    transactions = relationship("Transaction", back_populates="buyer")
 
     def __repr__(self):
         return f"<Buyer {self.name} (Phone: {self.phone_number})>"

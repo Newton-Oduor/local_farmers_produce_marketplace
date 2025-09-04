@@ -15,5 +15,7 @@ class Product(Base):
     # Relationship back to farmer (string avoids circular import)
     farmer = relationship("Farmer", back_populates="products") # Product linked to the farmer model and vice versa
 
+    transactions = relationship("Transaction", back_populates="product")
+
     def __repr__(self):
         return f"<Product {self.name} (Price: {self.price}, Qty: {self.quantity})>"
