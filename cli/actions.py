@@ -76,6 +76,12 @@ def add_product():
         print("Farmer not found!")
         return
 
+    # Prevent adding the same product twice for this farmer
+    existing = session.query(Product).filter_by(name=name, farmer_id=farmer_id).first()
+    if existing:
+        print(f"{farmer.name} already has a product called '{name}'.")
+        return
+
     product = Product(name=name, price=price, quantity=quantity, farmer=farmer)
     session.add(product)
 
