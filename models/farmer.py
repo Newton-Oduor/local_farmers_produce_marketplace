@@ -16,4 +16,4 @@ class Farmer(Base):
     products = relationship("Product", back_populates="farmer", cascade="all, delete, delete-orphan")
 
     def __repr__(self):
-        return f"<Farmer {self.name} ({self.location})>"
+        return f"<Farmer {self.name} ({self.location} - Phone: {self.phone_number})>"

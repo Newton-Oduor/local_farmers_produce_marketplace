@@ -7,7 +7,7 @@ from database.connection import Base
 
 class Payment(Base):
 
-     __tablename__ = "payments"
+    __tablename__ = "payments"
 
     id = Column(Integer, primary_key=True)
     amount = Column(Float, nullable=False) # Payment amount
@@ -18,4 +18,4 @@ class Payment(Base):
     transaction = relationship("Transaction", back_populates="payment", uselist=False)
 
     def __repr__(self):
-        return f"<Payment {self.id}: {self.status} - Amount: {self.amount}>" 
+         return f"<Payment {self.id}: {self.status} - Amount: {self.amount}>" 

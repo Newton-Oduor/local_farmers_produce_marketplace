@@ -6,7 +6,7 @@ class Product(Base):
     __tablename__ = "products"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=False) # e,g maize, tomatoes
+    name = Column(String, nullable=False) # e.g maize, tomatoes
     price = Column(Float, nullable=False) # price per unit e.g per kg
     quantity = Column(Integer, nullable=False) # Stock available
 
@@ -18,4 +18,4 @@ class Product(Base):
     transactions = relationship("Transaction", back_populates="product")
 
     def __repr__(self):
-        return f"<Product {self.name} (Price: {self.price}, Qty: {self.quantity})>"
+        return f"<Product {self.name} (Farmer ID: {self.farmer_id})>"
