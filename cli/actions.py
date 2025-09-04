@@ -67,7 +67,7 @@ def add_product():
         print("No farmers found. Add a farmer first!")
         return
 
-    print("Selevt a farmer by ID:")
+    print("Select a farmer by ID:")
     for f in farmers:
         print(f"{f.id}. {f,name}")
     farmer_id = int(input("> "))
@@ -108,8 +108,10 @@ def view_products_by_farmer():
     farmer_id = int(input("> "))
     farmer = session.query(Farmer).get(farmer_id)
     if not farmer:
-        print(f"{farmer.name} has no products.")
+        print("Farmer not found!")
         return
+    if not farmer.products:
+        print(f"{farmer.name} has no products.")
 
     print(f"Products by {farmer.name}:")
     for p in farmer.products:
