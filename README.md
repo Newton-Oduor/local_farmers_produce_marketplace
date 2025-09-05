@@ -43,7 +43,6 @@ The proposed solution is a Python-based CLI Marketplace Application that connect
 - Buyers can view detailed information about each product including price, quantity, and seller details.
 
 ### 3. Transaction Management (Purchases & Stock Update)
-- Buyers place orders through the CLI.
 - The system automatically updates stock levels after each purchase.
 - Transactions are recorded, linking buyers, products, and quantity purchased.
 - Transaction history is available for both buyers and farmers.
@@ -117,15 +116,33 @@ python app.py
 ```
 
 ## Database
-
 - SQLite database farmers_market.db is used.
-
 - Tables: farmers, buyers, products, transactions, payments.
-
 - SQLAlchemy ORM manages models and relationships.
-
 - Tabulate is used for clean CLI table displays.
 
+## Technologies Used
+Python, SQLite, SQLAlchemy & CLI interface.
+
+---
+
+## Future Improvements
+- Buyers place orders through the CLI.
+- Web Interface
+- Real payment intergration 
+- Reporting dashboards
+
+---
+
+## License
+This project is licensed under the MIT License.
+
+---
+
+## Acknowledgments
+- Special thanks to Moringa School Instructors & Flatiron School for the project guidelines.
+
+Author [Newton Oduor](https://github.com/Newton-Oduor/local_farmers_produce_marketplace)
 
 
 
