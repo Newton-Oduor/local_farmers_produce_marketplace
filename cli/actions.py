@@ -1,13 +1,14 @@
 from database.connection import Session
 from models.farmer import Farmer
 from models.product import Product
+from models.buyer import Buyer
 
 # A database session to interact with SQLite
 session = Session()
 
-# ------------------------
+# -------------------------
 # Farmer related functions
-# ------------------------
+# -------------------------
 
 # Adds new farmer to db
 def add_farmer():
@@ -140,9 +141,87 @@ def delete_product():
         session.rollback()
         print(f"Error: {e}")
 
-# ------------------------
+
+# -------------------------
+# Buyer urelated functions
+# -------------------------
+
+# Register a new buyer
+def add_buyer():
+    name = input("Buyer name: ")
+    phone = input("Phone number: ")
+
+    # Check if buyer exists
+    existing = session.query(Buyer).filter_by(name=name, phone_number=phone).first()
+    if existing:
+        print(f"Buyer already exists: {existing}")
+        return
+    
+    buyer = Buyer(name=name, phone_number=phone)
+    session.add(buyer)
+    
+    try:
+        session.commit()
+        print(f"Added buyer: {buyer}")
+    except Exception as e:
+        session.rollback()
+        print(f"Error: {e}")
+
+# Delete a buyer
+def delete_buyer():
+    buyers = session.query(Buyer).all()
+    if not buyers:
+        print("No buyers found.")
+        return
+    
+    print("Select a buyer by ID to delete:")
+    for b in buyers:
+        print(f"{b.id}. {b.name} - Phone: {b.phone_number}")
+
+    try:
+        buyer_id = int(input("> "))
+        buyer = session.query(Buyer).get(buyer_id)
+        if not buyer:
+            print("Buyer not found!")
+
+        # Delete associated transaction
+        for t in buyer.transactions:
+            session.delete(t)
+
+        session.delete(buyer)
+        session.commit()
+        print(f"Deleted buyer: {buyer.name}")
+
+    except Exception  as e:
+        session.rollback()
+        print(f"Error deleting buyer: {e}")
+
+
+# -------------------------
+# Search products functions
+# -------------------------
+
+def search_products():
+    term = input("Enter product name to search (leave blank to view all): ").strip()
+
+    if term:
+        products = session.query(Product).filter(Product.name.ilike(f"%{term}%")).all()
+    else:
+        products = session.query(Product).all()
+
+    if not products:
+        print("No products found")
+        return
+
+    print("\nProducts:")  
+    for p in products:
+        print(f"{p.id}. {p.name} - Price: {p.price}, Qty: {p.quantity}, Farmer: {p.farmer.name}")    
+
+
+
+# -------------------------
 # payment placeholder
-# ------------------------
+# -------------------------
 
 # Payment function
 def process_payment():
