@@ -63,12 +63,44 @@ The proposed solution is a Python-based CLI Marketplace Application that connect
 
 ---
 
+## Folder Structure
+
+```pgsql
+
+local_farmers_produce_marketplace/
+│
+├── cli/
+│   ├── __init__.py
+│   ├── actions.py       # All CLI actions (add/view/delete, purchase, reports)
+│   └── menu.py          # Menu interface and input handling
+│
+├── database/
+│   ├── __init__.py
+│   └── connection.py    # SQLAlchemy engine, session, and Base
+│
+├── models/
+│   ├── __init__.py
+│   ├── buyer.py
+│   ├── farmer.py
+│   ├── payment.py
+│   ├── product.py
+│   └── transaction.py
+│
+├── app.py               # Main entry point for running the CLI
+├── farmers_market.db    # SQLite database file
+├── README.md
+├── Pipfile
+└── Pipfile.lock
+```
+
+---
+
 ## Project Setup
 
 1. Clone the repository:
 
 ```bash
-git clone <repository_url>
+git clone https://github.com/Newton-Oduor/local_farmers_produce_marketplace
 cd local_farmers_produce_marketplace
 ```
 
