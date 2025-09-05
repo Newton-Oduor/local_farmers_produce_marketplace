@@ -16,6 +16,7 @@ def display_menu():
     print("10. Delete a buyer")
     print("11. Search products")
     print("12. View buyer transaction history")
+    print("13. View farmer sales & stock report")
     print("0. Exit")
 
 

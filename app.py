@@ -2,7 +2,7 @@ from cli.menu import display_menu
 from cli.actions import (
     add_farmer, add_product, view_farmers, view_products, view_products_by_farmer, 
     delete_farmer, delete_product, purchase_product, add_buyer, delete_buyer, search_products,
-    view_buyer_transactions
+    view_buyer_transactions, view_farmer_sales
 )
 
 # Main CLI loop. Displays menu and calls functions based on user choice
@@ -33,7 +33,9 @@ def main():
         elif choice == "11":
             search_products()
         elif choice == "12":
-            view_buyer_transactions()    
+            view_buyer_transactions()
+        elif choice == "13":
+            view_farmer_sales()       
         elif choice == "0":
             print("Thank you for using the LFPM App. Goodbye!")
             break

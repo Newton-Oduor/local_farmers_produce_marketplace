@@ -297,6 +297,11 @@ def process_payment(transaction, amount):
     print(f"Payment recorded: {status} (Transaction {transaction.id})")
 
 
+# -------------------------
+# Buyer transaction history
+# -------------------------
+
+
 def view_buyer_transactions():
     buyers = session.query(Buyer).filter_by(is_active=True).all()
     if not buyers:
@@ -330,4 +335,55 @@ def view_buyer_transactions():
             )
 
     except Exception as e:
-        print(f"Error: {e}")   
+        print(f"Error: {e}")
+
+
+# -------------------------
+# Farmer sales & stock report
+# ------------------------- 
+
+def view_farmer_sales():
+    farmers = session.query(Farmer).all()
+    if not farmers:
+        print("No farmers found.")
+        return
+    
+    print("Select a farmer by ID to view their sales report:")
+    for f in farmers:
+        print(f"{f.id}. {f.name} - {f.location}")
+
+
+    try:
+        farmer_id = int(input("> "))
+        farmer = session.query(Farmer).get(farmer_id)
+        if not farmer:
+            print("Farmer not found.")
+            return
+        
+        if not farmer.products:
+            print(f"{farmer.name} has no products listed.")
+            return
+        
+        print(f"\nSales & Stock Report for {farmer.name}:")
+        total_sales = 0
+
+        for p in farmer.products:
+            print(f"\n📦 Product: {p.name} (Price: {p.price}, Remaining Qty: {p.quantity})")
+
+            if not p.transactions:
+                print("  No sales yet.")
+                continue
+
+            for t in p.transactions:
+                buyer = session.query(Buyer).get(t.buyer_id)
+                print(
+                    f"  - {t.date}: {buyer.name} bought {t.quantity} (Total: {t.total_price})"
+                )
+                total_sales += t.total_price
+
+
+        print(f"\nTotal Sales: {total_sales}")
+
+
+    except Exception as e:
+        print(f"Error: {e}")     
