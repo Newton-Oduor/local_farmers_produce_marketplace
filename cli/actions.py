@@ -2,6 +2,8 @@ from database.connection import Session
 from models.farmer import Farmer
 from models.product import Product
 from models.buyer import Buyer
+from models.transaction import Transaction
+from models.payment import Payment
 
 # A database session to interact with SQLite
 session = Session()
@@ -70,7 +72,7 @@ def add_product():
 
     print("Select a farmer by ID:")
     for f in farmers:
-        print(f"{f.id}. {f,name}")
+        print(f"{f.id}. {f.name}")
     farmer_id = int(input("> "))
     farmer = session.query(Farmer).get(farmer_id)
     if not farmer:
@@ -184,6 +186,7 @@ def delete_buyer():
         buyer = session.query(Buyer).get(buyer_id)
         if not buyer:
             print("Buyer not found!")
+            return
 
         # Delete associated transaction
         buyer.is_active = False
@@ -218,9 +221,77 @@ def search_products():
 
 
 # -------------------------
-# payment placeholder
+# payment related function
 # -------------------------
 
-# Payment function
-def process_payment():
-    pass
+# Purchase a product
+def purchase_product():
+
+    # List buyers
+    buyers = session.query(Buyer).filter_by(is_active=True).all()
+    if not buyers:
+        print("No buyers found. Please register a buyer first.")
+        return
+    
+    print("\nSelect Buyer:")
+    for b in buyers:
+        print(f"{b.id}. {b.name} - Phone: {b.phone_number}")
+    buyer_id = int(input("> "))
+    buyer = session.query(Buyer).get(buyer_id)
+    if not buyer or not buyer.is_active:
+        print("Invalid buyer selected.")
+        return
+    
+    # List products
+    products = session.query(Product).all()
+    if not products:
+        print("No products available.")
+        return
+    
+    print("\nSelect Product:")
+    for p in products:
+        print(f"{p.id}. {p.name} - Price: {p.price}, Qty: {p.quantity}, Farmer: {p.farmer.name}")
+    product_id = int(input("> "))
+    product = session.query(Product).get(product_id)
+    if not product or product.quantity <= 0:
+        print("Invalid or out-of-stock product selected.")
+        return
+    
+
+    # Ask for quantity
+    qty = int(input("Enter quantity: "))
+    if qty <= 0 or qty > product.quantity:
+        print("Invalid quantity.")
+        return
+    
+    total_price = product.price * qty
+
+
+    # Reduce stock
+    product.quantity -= qty
+
+    # Create transaction
+    transaction = Transaction(buyer=buyer, product=product, quantity=qty)
+    session.add(transaction)
+    session.commit()
+
+    print(f"Transaction created: {buyer.name} bought {qty} {product.name}(s) for {total_price}")
+
+
+    # Process payment
+    process_payment(transaction, total_price)
+    session.commit()
+
+
+
+# Payment simulation function
+def process_payment(transaction, amount):
+    print(f"\nM-Pesa Payment Simulation for KES {amount}")
+    code = input("Enter M-Pesa confirmation code (or leave blank to fail): ")
+
+    status = "Completed" if code else "Failed"
+
+    payment = Payment(amount=amount, status=status, transaction=transaction)
+    session.add(payment)
+
+    print(f"✅ Payment recorded: {status} (Transaction {transaction.id})")
