@@ -4,6 +4,7 @@ from models.product import Product
 from models.buyer import Buyer
 from models.transaction import Transaction
 from models.payment import Payment
+from tabulate import tabulate
 
 # A database session to interact with SQLite
 session = Session()
@@ -34,8 +35,9 @@ def view_farmers():
     if not farmers:
         print("No farmers found.")
         return
-    for f in farmers:
-        print(f"{f.id}. {f.name} ({f.location}) - phone: {f.phone_number}")
+    
+    table = [[f.id, f.name, f.location, f.phone_number] for f in farmers]
+    print(tabulate(table, headers=["ID", "Name", "Location", "Phone"], tablefmt="pretty"))
 
 # Deletes farmer along with all their products by ID
 def delete_farmer():
@@ -101,8 +103,10 @@ def view_products():
     if not products:
         print("No products found.")
         return
-    for p in products:
-        print(f"{p.id}. {p.name} - Price: {p.price}, Qty: {p.quantity}, Farmer: {p.farmer.name}")
+    
+    table = [[p.id, p.name, p.price, p.quantity, p.farmer.name] for p in products]
+    print(tabulate(table, headers=["ID", "Name", "Price", "Quantity", "Farmer"], tablefmt="pretty"))
+
 
 # Display products belonging to a specific farmer
 def view_products_by_farmer():
@@ -121,10 +125,12 @@ def view_products_by_farmer():
         return
     if not farmer.products:
         print(f"{farmer.name} has no products.")
+        return
 
     print(f"Products by {farmer.name}:")
-    for p in farmer.products:
-        print(f"- {p.name} (Price: {p.price}, qty: {p.quantity})")
+    table = [[p.id, p.name, p.price, p.quantity] for p in farmer.products]
+    print(tabulate(table, headers=["ID", "Product", "Price", "Quantity"], tablefmt="pretty"))
+
 
 # Delete a product by ID
 def delete_product():
@@ -145,7 +151,7 @@ def delete_product():
 
 
 # -------------------------
-# Buyer urelated functions
+# Buyer related functions
 # -------------------------
 
 # Register a new buyer
@@ -215,8 +221,8 @@ def search_products():
         return
 
     print("\nProducts:")  
-    for p in products:
-        print(f"{p.id}. {p.name} - Price: {p.price}, Qty: {p.quantity}, Farmer: {p.farmer.name}")    
+    table = [[p.id, p.name, p.price, p.quantity, p.farmer.name] for p in products]
+    print(tabulate(table, headers=["ID", "Name", "Price", "Quantity", "Farmer"], tablefmt="pretty"))  
 
 
 
@@ -325,14 +331,14 @@ def view_buyer_transactions():
             return
         
         print(f"\nTransaction history for {buyer.name}:")
+        table = []
         for t in transactions:
             product = session.query(Product).get(t.product_id)
             farmer = session.query(Farmer).get(product.farmer_id)
-            print(
-                f"- {t.date}: Bought {t.quantity} x {product.name} "
-                f"at {product.price} each (Total: {t.total_price}) "
-                f"from {farmer.name}"
-            )
+            table.append([t.date, product.name, t.quantity, product.price, t.total_price, farmer.name])
+
+        print(tabulate(table, headers=["Date", "Product", "Qty", "Unit Price", "Total", "Farmer"], tablefmt="pretty"))    
+
 
     except Exception as e:
         print(f"Error: {e}")
@@ -368,18 +374,23 @@ def view_farmer_sales():
         total_sales = 0
 
         for p in farmer.products:
-            print(f"\n📦 Product: {p.name} (Price: {p.price}, Remaining Qty: {p.quantity})")
+            print(f"\nProduct: {p.name} (Price: {p.price}, Remaining Qty: {p.quantity})")
 
             if not p.transactions:
                 print("  No sales yet.")
                 continue
 
+            table = []
             for t in p.transactions:
                 buyer = session.query(Buyer).get(t.buyer_id)
-                print(
-                    f"  - {t.date}: {buyer.name} bought {t.quantity} (Total: {t.total_price})"
-                )
+                table.append([t.date, buyer.name, t.quantity, t.total_price])
                 total_sales += t.total_price
+
+            print(tabulate(
+                table,
+                headers=["Date", "Buyer", "Quantity", "Total Price"],
+                tablefmt="pretty"
+            ))       
 
 
         print(f"\nTotal Sales: {total_sales}")
