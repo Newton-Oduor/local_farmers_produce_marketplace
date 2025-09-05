@@ -167,7 +167,7 @@ def add_buyer():
         session.rollback()
         print(f"Error: {e}")
 
-# Delete a buyer
+# Soft delete a buyer
 def delete_buyer():
     buyers = session.query(Buyer).all()
     if not buyers:
@@ -176,7 +176,8 @@ def delete_buyer():
     
     print("Select a buyer by ID to delete:")
     for b in buyers:
-        print(f"{b.id}. {b.name} - Phone: {b.phone_number}")
+        status = " (Deleted)" if not b.is_active else ""
+        print(f"{b.id}. {b.name}{status} - Phone: {b.phone_number}")
 
     try:
         buyer_id = int(input("> "))
@@ -185,12 +186,9 @@ def delete_buyer():
             print("Buyer not found!")
 
         # Delete associated transaction
-        for t in buyer.transactions:
-            session.delete(t)
-
-        session.delete(buyer)
+        buyer.is_active = False
         session.commit()
-        print(f"Deleted buyer: {buyer.name}")
+        print(f"✅ Buyer {buyer_id} marked as deleted.")
 
     except Exception  as e:
         session.rollback()
