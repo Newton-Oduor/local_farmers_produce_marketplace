@@ -115,11 +115,9 @@ pipenv shell
 python app.py
 ```
 
-## Database
-- SQLite database farmers_market.db is used.
-- Tables: farmers, buyers, products, transactions, payments.
-- SQLAlchemy ORM manages models and relationships.
-- Tabulate is used for clean CLI table displays.
+## APP Demo
+
+- [Video App Demo](https://www.dropbox.com/scl/fi/cpljcpwrup8qvio9t6xm8/Recording-1.mp4?rlkey=n7938eij4lynlgif5z7p7boxp&st=39runga6&dl=0)
 
 ## Technologies Used
 Python, SQLite, SQLAlchemy & CLI interface.
