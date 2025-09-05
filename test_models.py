@@ -1,94 +1,68 @@
+# test_models.py
 from database.connection import Session, Base, engine
 
-# Import all models BEFORE creating tables
 from models.farmer import Farmer
 from models.product import Product
 from models.buyer import Buyer
 from models.transaction import Transaction
 from models.payment import Payment
 
-# Create all tables (safe if they already exist)
+# -------------------------
+# Setup: create tables
+# -------------------------
 Base.metadata.create_all(engine)
+session = Session
 
-# Open a session
-session = Session()
+# -------------------------
+# Simple test data
+# -------------------------
+def test_seed_data():
+    # Clear existing data
+    session.query(Payment).delete()
+    session.query(Transaction).delete()
+    session.query(Product).delete()
+    session.query(Farmer).delete()
+    session.query(Buyer).delete()
+    session.commit()
 
-try:
-    print("\n--- TESTING MODELS ---\n")
+    # Add farmers
+    f1 = Farmer(name="John Doe", location="Nairobi", phone_number="0712345678")
+    f2 = Farmer(name="Jane Smith", location="Mombasa", phone_number="0723456789")
+    session.add_all([f1, f2])
+    session.commit()
 
-    # 1️⃣ Test Farmer
-    farmer = session.query(Farmer).filter_by(name="Alice Farmer").first()
-    if not farmer:
-        farmer = Farmer(name="Alice Farmer", location="Nairobi", phone_number="0711111111")
-        session.add(farmer)
-        session.commit()
-        print(f"✅ Added Farmer: {farmer}")
-    else:
-        print(f"ℹ️ Farmer already exists: {farmer}")
+    # Add products
+    p1 = Product(name="Tomatoes", price=50, quantity=100, farmer=f1)
+    p2 = Product(name="Onions", price=80, quantity=50, farmer=f2)
+    session.add_all([p1, p2])
+    session.commit()
 
-    # 2️⃣ Test Product
-    product = session.query(Product).filter_by(name="Onions", farmer_id=farmer.id).first()
-    if not product:
-        product = Product(name="Onions", price=30.0, quantity=50, farmer=farmer)
-        session.add(product)
-        session.commit()
-        print(f"✅ Added Product: {product}")
-    else:
-        print(f"ℹ️ Product already exists: {product}")
+    # Add buyers
+    b1 = Buyer(name="Alice", phone_number="0734567890")
+    b2 = Buyer(name="Bob", phone_number="0745678901")
+    session.add_all([b1, b2])
+    session.commit()
 
-    # 3️⃣ Test Buyer
-    buyer = session.query(Buyer).filter_by(name="Bob Buyer").first()
-    if not buyer:
-        buyer = Buyer(name="Bob Buyer", phone_number="0722222222")
-        session.add(buyer)
-        session.commit()
-        print(f"✅ Added Buyer: {buyer}")
-    else:
-        print(f"ℹ️ Buyer already exists: {buyer}")
+    print("✅ Seed data added successfully.")
 
-    # 4️⃣ Test Payment
-    payment = session.query(Payment).filter_by(amount=30.0, status="Pending").first()
-    if not payment:
-        payment = Payment(amount=30.0, status="Pending")
-        session.add(payment)
-        session.commit()
-        print(f"✅ Added Payment: {payment}")
-    else:
-        print(f"ℹ️ Payment already exists: {payment}")
+# -------------------------
+# Quick verification
+# -------------------------
+def verify_data():
+    print("\nFarmers:")
+    for f in session.query(Farmer).all():
+        print(f"{f.id}. {f.name} - {f.location}")
 
-    # 5️⃣ Test Transaction
-    transaction = session.query(Transaction).filter_by(buyer_id=buyer.id, product_id=product.id).first()
-    if not transaction:
-        transaction = Transaction(
-            buyer=buyer,
-            product=product,
-            quantity=2,
-            payment=payment
-        )
-        session.add(transaction)
-        session.commit()
-        print(f"✅ Added Transaction: {transaction}")
-    else:
-        print(f"ℹ️ Transaction already exists: {transaction}")
+    print("\nProducts:")
+    for p in session.query(Product).all():
+        print(f"{p.id}. {p.name} - {p.price} KES - Qty: {p.quantity} - Farmer: {p.farmer.name}")
 
-    # 6️⃣ Verify relationships
-    print(f"\n🔎 Farmer {farmer.name} products:")
-    for p in farmer.products:
-        print(f"- {p.name} (Qty: {p.quantity})")
+    print("\nBuyers:")
+    for b in session.query(Buyer).all():
+        print(f"{b.id}. {b.name} - {b.phone_number}")
 
-    print(f"\n🔎 Buyer {buyer.name} transactions:")
-    for t in buyer.transactions:
-        print(f"- Bought {t.quantity} of {t.product.name}, Payment Status: {t.payment.status}")
+if __name__ == "__main__":
+    test_seed_data()
+    verify_data()
 
-    print(f"\n🔎 Product {product.name} transactions:")
-    for t in product.transactions:
-        print(f"- Bought by {t.buyer.name}, Payment Status: {t.payment.status}")
-
-except Exception as e:
-    session.rollback()
-    print(f"❌ Error during testing: {e}")
-
-finally:
-    session.close()
-    print("\n--- TESTING COMPLETED ---")
 
