@@ -191,7 +191,7 @@ def delete_buyer():
         # Delete associated transaction
         buyer.is_active = False
         session.commit()
-        print(f"✅ Buyer {buyer_id} marked as deleted.")
+        print(f"Buyer {buyer_id} marked as deleted.")
 
     except Exception  as e:
         session.rollback()
@@ -294,4 +294,40 @@ def process_payment(transaction, amount):
     payment = Payment(amount=amount, status=status, transaction=transaction)
     session.add(payment)
 
-    print(f"✅ Payment recorded: {status} (Transaction {transaction.id})")
+    print(f"Payment recorded: {status} (Transaction {transaction.id})")
+
+
+def view_buyer_transactions():
+    buyers = session.query(Buyer).filter_by(is_active=True).all()
+    if not buyers:
+        print("No active buyers found.")
+        return
+    
+    print("Select a buyer by ID to view their transactions:")
+    for b in buyers:
+        print(f"{b.id}. {b.name} - Phone: {b.phone_number}")
+
+    try:
+        buyer_id = int(input("> "))
+        buyer = session.query(Buyer).get(buyer_id)
+        if not buyer or not buyer.is_active:
+            print("Buyer not found or is inactive.")
+            return
+        
+        transactions = session.query(Transaction).filter_by(buyer_id=buyer.id).all()
+        if not transactions:
+            print(f"{buyer.name} has no transactions.")
+            return
+        
+        print(f"\nTransaction history for {buyer.name}:")
+        for t in transactions:
+            product = session.query(Product).get(t.product_id)
+            farmer = session.query(Farmer).get(product.farmer_id)
+            print(
+                f"- {t.date}: Bought {t.quantity} x {product.name} "
+                f"at {product.price} each (Total: {t.total_price}) "
+                f"from {farmer.name}"
+            )
+
+    except Exception as e:
+        print(f"Error: {e}")   

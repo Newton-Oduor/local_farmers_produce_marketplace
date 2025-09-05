@@ -15,6 +15,7 @@ def display_menu():
     print("9. Add a buyer")
     print("10. Delete a buyer")
     print("11. Search products")
+    print("12. View buyer transaction history")
     print("0. Exit")
 
 
